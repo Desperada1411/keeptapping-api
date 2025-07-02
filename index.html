@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Keep Tapping</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #111;
+      color: #fff;
+      padding-top: 50px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+    }
+
+    #counter {
+      font-size: 3rem;
+      margin: 20px 0;
+    }
+
+    button {
+      font-size: 2rem;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 15px;
+      background: red;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      background: darkred;
+    }
+
+    h2 {
+      margin-top: 40px;
+      font-size: 1.5rem;
+    }
+
+    ul#months {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul#months li {
+      margin: 4px 0;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌍 Keep Tapping</h1>
+  <div id="counter">Loading...</div>
+
+  <button onclick="tap()">🔴 TAP</button>
+
+  <h2>📊 Leaderboard</h2>
+  <ul id="months"></ul>
+
+  <footer>
+    Powered by Supabase + Node.js<br />
+    Every tap this month counts for the world.
+  </footer>
+
+  <script>
+    const API_BASE = 'https://keeptapping-api.up.railway.app'; // 🟢 UPDATE THIS TO YOUR REAL DEPLOYED API URL
+
+    async function fetchCount() {
+      try {
+        const res = await fetch(`${API_BASE}/tap`, { method: 'POST' });
+        const data = await res.json();
+        document.getElementById('counter').innerText = data.new_count.toLocaleString();
+        loadLeaderboard();
+      } catch (err) {
+        console.error('Tap failed:', err);
+        alert('Failed to tap. Server down?');
+      }
+    }
+
+    async function loadLeaderboard() {
+      try {
+        const res = await fetch(`${API_BASE}/leaderboard`);
+        const data = await res.json();
+
+        const list = document.getElementById('months');
+        list.innerHTML = '';
+
+        data.forEach(row => {
+          const item = document.createElement('li');
+          item.textContent = `${row.month} ${row.year} — ${row.tap_count.toLocaleString()} taps`;
+          list.appendChild(item);
+        });
+      } catch (err) {
+        console.error('Leaderboard failed:', err);
+      }
+    }
+
+    function tap() {
+      fetchCount();
+    }
+
+    window.onload = () => {
+      fetchCount();
+      loadLeaderboard();
+    };
+  </script>
+
+</body>
+</html>
