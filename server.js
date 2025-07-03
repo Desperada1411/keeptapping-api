@@ -12,7 +12,7 @@ app.use(cors({
 app.use(express.json());
 
 const SUPABASE_URL = 'https://hvxkdtggfueynkburzmx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // ⚠️ Replace with full key
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2eGtkdGdnZnVleW5rYnVyem14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MzY1ODAsImV4cCI6MjA2NzAxMjU4MH0.fVFWTvK5Jk4AOTCXetRaWdTPT2H7qPE0VsSinKVEv2k'; // ⚠️ Replace with full key
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
