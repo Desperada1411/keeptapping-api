@@ -101,14 +101,16 @@
   <script>
     const API_BASE = 'https://keeptapping-api.onrender.com';
     let currentCount = 0;
+    let latestCount = 0;
 
     async function fetchCount() {
-      try {
+    try {
         const res = await fetch(`${API_BASE}/tap`, { method: 'POST' });
         const data = await res.json();
 
-        if (data.new_count > latestCount) {
+        if (data.new_count !== latestCount) {
           latestCount = data.new_count;
+          currentCount = latestCount;
           document.getElementById('counter').innerText = latestCount.toLocaleString();
         }
 
@@ -118,7 +120,6 @@
         alert('Failed to tap. Server down?');
       }
     }
-
 
     async function loadLeaderboard() {
       try {
