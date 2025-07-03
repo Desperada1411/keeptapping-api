@@ -6,14 +6,13 @@ const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 app.use(cors({
-  origin: '*', // Allow all origins for now — customize later for security
+  origin: '*',
   methods: ['GET', 'POST']
 }));
 app.use(express.json());
 
-// Replace with your actual Supabase credentials
 const SUPABASE_URL = 'https://hvxkdtggfueynkburzmx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // ⚠️ Shortened for safety
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // ⚠️ Replace with full key
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -25,7 +24,7 @@ function getMonthAndYear() {
   };
 }
 
-// ✅ GET /tap → Return current tap count (no increment)
+// ✅ GET /tap → Return current count
 app.get('/tap', async (req, res) => {
   const { month, year } = getMonthAndYear();
 
@@ -39,6 +38,7 @@ app.get('/tap', async (req, res) => {
       .single();
 
     if (error) throw error;
+
     res.json({ current_count: data.tap_count });
   } catch (err) {
     console.error('GET /tap error:', err);
@@ -46,7 +46,7 @@ app.get('/tap', async (req, res) => {
   }
 });
 
-// ✅ POST /tap → Increase tap count by 1
+// ✅ POST /tap → Add 1
 app.post('/tap', async (req, res) => {
   const { month, year } = getMonthAndYear();
 
@@ -61,7 +61,6 @@ app.post('/tap', async (req, res) => {
 
     if (error && error.code !== 'PGRST116') throw error;
 
-    // If row doesn't exist, insert new month
     if (!row) {
       const { data: inserted, error: insertError } = await supabase
         .from('global_taps')
@@ -74,7 +73,6 @@ app.post('/tap', async (req, res) => {
       return res.json({ new_count: 1 });
     }
 
-    // Row exists — increment count
     const newCount = row.tap_count + 1;
 
     const { error: updateError } = await supabase
@@ -91,7 +89,7 @@ app.post('/tap', async (req, res) => {
   }
 });
 
-// ✅ GET /leaderboard → Fetch all months
+// ✅ GET /leaderboard → All months
 app.get('/leaderboard', async (req, res) => {
   try {
     let { data, error } = await supabase
@@ -101,6 +99,7 @@ app.get('/leaderboard', async (req, res) => {
       .order('month', { ascending: false });
 
     if (error) throw error;
+
     res.json(data);
   } catch (err) {
     console.error('GET /leaderboard error:', err);
