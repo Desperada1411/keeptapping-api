@@ -106,14 +106,19 @@
       try {
         const res = await fetch(`${API_BASE}/tap`, { method: 'POST' });
         const data = await res.json();
-        currentCount = data.new_count;
-        document.getElementById('counter').innerText = currentCount.toLocaleString();
+
+        if (data.new_count > latestCount) {
+          latestCount = data.new_count;
+          document.getElementById('counter').innerText = latestCount.toLocaleString();
+        }
+
         loadLeaderboard();
       } catch (err) {
         console.error('Tap failed:', err);
         alert('Failed to tap. Server down?');
       }
     }
+
 
     async function loadLeaderboard() {
       try {
