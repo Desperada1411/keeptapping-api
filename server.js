@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Replace with your own keys!
 const SUPABASE_URL = 'https://hvxkdtggfueynkburzmx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2eGtkdGdnZnVleW5rYnVyem14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MzY1ODAsImV4cCI6MjA2NzAxMjU4MH0.fVFWTvK5Jk4AOTCXetRaWdTPT2H7qPE0VsSinKVEv2k';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // shorten for safety
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -74,6 +74,30 @@ app.post('/tap', async (req, res) => {
     return res.json({ new_count: newCount });
   }
 });
+
+
+// 🆕 GET /tap — Just fetch tap count without increasing it
+app.get('/tap', async (req, res) => {
+  const { month, year } = getMonthAndYear();
+
+  try {
+    const { data, error } = await supabase
+      .from('global_taps')
+      .select('tap_count')
+      .eq('month', month)
+      .eq('year', year)
+      .eq('is_active', true)
+      .single();
+
+    if (error) throw error;
+
+    res.json({ current_count: data.tap_count });
+  } catch (err) {
+    console.error('GET /tap error:', err);
+    res.status(500).json({ error: 'Failed to fetch current count' });
+  }
+});
+
 
 app.get('/leaderboard', async (req, res) => {
   let { data, error } = await supabase
