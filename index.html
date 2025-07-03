@@ -117,21 +117,19 @@
     let currentCount = 0;
     let latestCount = 0;
 
-    // 👇 Just fetch count, no increase
     async function initCount() {
       try {
-        const res = await fetch(`${API_BASE}/tap`); // now GET instead of POST
+        const res = await fetch(`${API_BASE}/tap`);
         const data = await res.json();
         latestCount = data.current_count;
         currentCount = latestCount;
         document.getElementById('counter').innerText = latestCount.toLocaleString();
       } catch (err) {
         console.error('Failed to load count:', err);
-        alert('Server down?');
+        alert('Server error!');
       }
     }
 
-    // 👇 Actual tap (POST)
     async function fetchCount() {
       try {
         const res = await fetch(`${API_BASE}/tap`, { method: 'POST' });
@@ -155,6 +153,8 @@
         const res = await fetch(`${API_BASE}/leaderboard`);
         const data = await res.json();
 
+        if (!Array.isArray(data)) return;
+
         const list = document.getElementById('months');
         list.innerHTML = '';
 
@@ -171,11 +171,11 @@
     function tap() {
       currentCount++;
       document.getElementById('counter').innerText = currentCount.toLocaleString();
-      fetchCount(); // backend sync
+      fetchCount();
     }
 
     window.onload = () => {
-      initCount(); // ✅ only GET here
+      initCount();
       loadLeaderboard();
     };
   </script>
