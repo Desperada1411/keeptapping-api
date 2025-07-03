@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Keep Tapping</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6107635288268670" crossorigin="anonymous"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -90,6 +91,19 @@
 
   <button onclick="tap()">🔴 TAP</button>
 
+  <!-- 🟡 Ad Placement -->
+  <div style="margin: 30px auto; max-width: 100%;">
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-client="ca-pub-6107635288268670"
+         data-ad-slot="1234567890"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
   <h2>📊 Leaderboard</h2>
   <ul id="months"></ul>
 
@@ -103,8 +117,23 @@
     let currentCount = 0;
     let latestCount = 0;
 
+    // 👇 Just fetch count, no increase
+    async function initCount() {
+      try {
+        const res = await fetch(`${API_BASE}/tap`); // now GET instead of POST
+        const data = await res.json();
+        latestCount = data.current_count;
+        currentCount = latestCount;
+        document.getElementById('counter').innerText = latestCount.toLocaleString();
+      } catch (err) {
+        console.error('Failed to load count:', err);
+        alert('Server down?');
+      }
+    }
+
+    // 👇 Actual tap (POST)
     async function fetchCount() {
-    try {
+      try {
         const res = await fetch(`${API_BASE}/tap`, { method: 'POST' });
         const data = await res.json();
 
@@ -140,14 +169,13 @@
     }
 
     function tap() {
-      // 👇 Instant visual +1
       currentCount++;
       document.getElementById('counter').innerText = currentCount.toLocaleString();
       fetchCount(); // backend sync
     }
 
     window.onload = () => {
-      fetchCount();
+      initCount(); // ✅ only GET here
       loadLeaderboard();
     };
   </script>
